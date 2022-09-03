@@ -1,0 +1,154 @@
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+h1 {
+  text-align: center;
+  font-family: "Segoe UI", Verdana, sans-serif;
+}
+
+.container {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 10px;
+  padding: 10px;
+}
+
+.floor-input,
+.lift-input {
+  margin: 5px;
+  font-size: 20px;
+}
+
+.floor-input input,
+.lift-input input {
+  background-color: whitesmoke;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 20px;
+  outline: none;
+  caret-color: chartreuse;
+}
+
+.button-floor {
+  /* justify-content: left;
+  align-items: flex-start;
+  border: none;
+  font-size: 14px;
+  border: 1px solid #e599df; */
+}
+.up-btn {
+  margin: 2px;
+  width: 50px;
+  height: 30px;
+  border-radius: 5px;
+  background-color: yellow;
+  border: none;
+  cursor: pointer;
+}
+.down-btn {
+  margin: 2px;
+  height: 30px;
+  border-radius: 5px;
+  background-color: lightgreen;
+  border: none;
+  cursor: pointer;
+}
+
+.generate-button {
+  margin: 10px;
+  outline: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: yellowgreen;
+}
+.generate-button:hover {
+  background-color: #3e8e41;
+}
+.generate-button:active {
+  background-color: #3e8e41;
+  transition: all 0.8s;
+  transform: translateY(4px);
+}
+
+.lifts {
+  width: 80px;
+  height: 100px;
+  background-color: aquamarine;
+  position: absolute;
+  /* left: 0;
+  top: 0; */
+  align-items: center;
+  border: 2px solid;
+  border-radius: 5px;
+  border: 0;
+  content: none;
+}
+
+/* inside lift text */
+.lifts p {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.liftMotion {
+  /* transition-duration: 2s; */
+}
+
+.lifts .gate {
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  border: 1px solid pink;
+  background-color: rgb(49, 101, 101);
+}
+
+.gateLeft {
+  left: 0;
+}
+
+.gateRight {
+  right: 0;
+}
+
+.floor {
+  height: 100px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: whitesmoke;
+  padding: 5px;
+  border-bottom: 2px black ridge;
+  /* margin-bottom: -1px; */
+}
+
+#simulationArea {
+  margin: 5px;
+}
+
+.animateLiftsDoorsOnFloorStop {
+  animation-duration: 4s;
+  animation-timing-function: linear;
+  animation-name: LiftDoorSimulation;
+}
+
+@keyframes LiftDoorSimulation {
+  from {
+    width: 50%;
+  }
+  50% {
+    width: 0%;
+  }
+  to {
+    width: 50%;
+  }
+}
