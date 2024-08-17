@@ -11,6 +11,7 @@
   --lift-border: 2px solid;
   --lift-height: 100px;
   --lift-width: 80px;
+  --floor-border-size: var(--lift-width);
 }
 
 * {
@@ -121,6 +122,12 @@ h1 {
   right: 0;
 }
 
+.disabled-lift {
+  opacity: 0.5; /* Make the disabled lifts look faded */
+  pointer-events: none; /* Prevent interaction with disabled lifts */
+  background-color: #ccc; /* Optional: change the background color */
+  border: 2px dashed #aaa; /* Optional: change the border style */
+}
 .floor {
   height: var(--lift-height);
   display: flex;
@@ -128,8 +135,8 @@ h1 {
   justify-content: space-between;
   position: relative;
   /* background-color: var(--bg-color); */
-  padding: 5px;
-  border-bottom: 2px ridge black;
+  /* padding: 5px; */
+  /* border: var(--lift-border); */
 }
 
 #simulationArea {
