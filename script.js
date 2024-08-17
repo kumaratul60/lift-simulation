@@ -170,7 +170,7 @@ const generateLifts = (n) => {
 
   for (let i = 0; i < n; i++) {
     const liftNo = `Lift-${i}`;
-    const liftPositionX = (i + 1) * 90; // Position calculation
+    const liftPositionX = (i + 1) * 90; // Position
 
     // Create lift element
     const currLift = document.createElement("div");
@@ -178,14 +178,11 @@ const generateLifts = (n) => {
     currLift.className = "lifts";
     currLift.style.left = `${liftPositionX}px`;
     currLift.style.top = "0px";
-
-    // Create inner content
     currLift.innerHTML = `
       <div class="gate gateLeft" id="L${i}left_gate"></div>
       <div class="gate gateRight" id="L${i}right_gate"></div>
     `;
 
-    // Append to the DOM
     level0Element.appendChild(currLift);
 
     // Initialize lift position
@@ -200,13 +197,8 @@ const generateLifts = (n) => {
 };
 
 function fullFillLiftCallsQueue() {
-  // Exit early if there are no lift calls in the queue
   if (liftCallsQueue.length === 0) return;
-
-  // Get the target floor from the queue
-  const targetFloor = liftCallsQueue.shift(); // Remove and get the first element
-
-  // Find the nearest free lift
+  const targetFloor = liftCallsQueue.shift();
   const nearestLiftIndex = findNearestFreeLift(targetFloor);
 
   if (nearestLiftIndex !== -1) {
