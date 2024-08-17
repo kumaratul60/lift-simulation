@@ -134,13 +134,13 @@ h1 {
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  /* background-color: var(--bg-color); */
+  background-color: var(--bg-color);
   /* padding: 5px; */
-  /* border: var(--lift-border); */
 }
 
 #simulationArea {
-  margin: 5px;
+  margin: 10px;
+  padding: 5px;
 }
 
 /* Lift door opening animation */
