@@ -48,7 +48,7 @@ h1 {
   padding: 5px 10px;
   font-size: 20px;
   outline: none;
-  caret-color: chartreuse;
+  caret-color: rgb(0, 204, 255);
 }
 
 .button-floor {
@@ -127,7 +127,7 @@ h1 {
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  background-color: var(--bg-color);
+  /* background-color: var(--bg-color); */
   padding: 5px;
   border-bottom: 2px ridge black;
 }
@@ -136,17 +136,31 @@ h1 {
   margin: 5px;
 }
 
-.door-animation {
-  animation-duration: 4s;
+/* Lift door opening animation */
+.door-animation-open {
+  animation-duration: 2.5s;
   animation-timing-function: linear;
-  animation-name: LiftDoorSimulation;
+  animation-name: LiftDoorOpen;
 }
 
-@keyframes LiftDoorSimulation {
+/* Lift door closing animation */
+.door-animation-close {
+  animation-duration: 2.5s;
+  animation-timing-function: linear;
+  animation-name: LiftDoorClose;
+}
+
+@keyframes LiftDoorOpen {
   from {
     width: 50%;
   }
-  50% {
+  to {
+    width: 0%;
+  }
+}
+
+@keyframes LiftDoorClose {
+  from {
     width: 0%;
   }
   to {

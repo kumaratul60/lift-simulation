@@ -21,45 +21,35 @@ function startVirtualSimulation() {
   }
 }
 
-const validateLiftAndFloorEntries = () => {
+function validateLiftAndFloorEntries() {
   // Get the values and parse them to integers
   noOfFloors = parseInt(document.getElementById("noOfFloors").value, 10);
   noOfLifts = parseInt(document.getElementById("noOfLifts").value, 10);
 
-  // Validate number of floors
-  if (isNaN(noOfFloors) || noOfFloors <= 0) {
-    alert("Enter a valid number of floors.");
-    return 0;
-  }
-  if (noOfFloors > 10) {
-    alert("Only 10 floors are available currently.");
+  if (isNaN(noOfFloors) || noOfFloors < -5 || noOfFloors === 0 || noOfFloors > 10) {
+    alert("Enter a valid number of floors between -5 and 10.");
     return 0;
   }
 
-  // Validate number of lifts
-  if (isNaN(noOfLifts) || noOfLifts <= 0) {
-    alert("Enter a valid number of lifts.");
-    return 0;
-  }
-  if (noOfLifts > 10) {
-    alert("Only 10 lifts are available currently.");
+  if (isNaN(noOfLifts) || noOfLifts <= 0 || noOfLifts > 10) {
+    alert("Enter a valid number of lifts between 1 and 10.");
     return 0;
   }
 
   // Return 1 if all validations pass
   return 1;
-};
+}
 
-const generateFloors = (n) => {
+function generateFloors(n) {
   const simulationArea = document.getElementById("simulationArea");
   simulationArea.innerHTML = ""; // Clear the area once
 
   // Create a DocumentFragment to hold all floors
   const fragment = document.createDocumentFragment();
 
-  for (let i = 0; i < n; i++) {
-    const level = n - i - 1;
-    const floorNo = `Level-${level}`;
+  for (let i = 0; i < Math.abs(n); i += 1) {
+    let level = n > 0 ? n - i - 1 : -i;
+    const floorNo = `Level:${level}`;
     const currLevel = `L${level}`;
 
     // Create floor element
@@ -82,13 +72,56 @@ const generateFloors = (n) => {
 
   // Append all floors at once
   simulationArea.appendChild(fragment);
-};
+}
+
+function generateLifts(n) {
+  // Clear previous lift info
+  allLiftInfo = [];
+
+  const baseLevel = document.getElementById("Level:0");
+
+  if (!baseLevel) {
+    console.error("Base level element not found. Ensure floors are generated before lifts.");
+    return;
+  }
+
+  for (let i = 0; i < n; i++) {
+    const liftNo = `Lift-${i}`;
+    const liftPositionX = (i + 1) * 90; // Position calculation
+
+    // Create lift element
+    const currLift = document.createElement("div");
+    currLift.id = liftNo;
+    currLift.className = "lifts";
+    currLift.style.left = `${liftPositionX}px`;
+    currLift.style.top = "0px"; // Position at the bottom of the base level
+    currLift.innerHTML = `
+      <div class="gate gateLeft" id="L${i}left_gate"></div>
+      <div class="gate gateRight" id="L${i}right_gate"></div>
+    `;
+
+    baseLevel.appendChild(currLift);
+
+    // Initialize lift position to the lowest floor
+    currLiftPositionArr[i] = 0;
+
+    // Add lift details
+    allLiftInfo.push({
+      id: liftNo,
+      inMotion: false,
+    });
+  }
+}
 
 function addButtonFunctionalities() {
   const allButtons = document.querySelectorAll(".button-floor");
   allButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
-      const targetFloor = parseInt(btn.id.slice(-1));
+      // const targetFloor = parseInt(btn.id.slice(-1));
+
+      // hanlde negative number
+      const targetFloor = parseInt(btn.id.match(/-?\d+/)[0], 10);
+
       if (!activeLiftsDestinations.includes(targetFloor)) {
         activeLiftsDestinations.push(targetFloor);
         liftCallsQueue.push(targetFloor);
@@ -110,9 +143,10 @@ function translateLift(liftNo, targetLiftPos) {
   allLiftInfo[liftNo].inMotion = true;
 
   const unitsToMove = Math.abs(targetLiftPos - currLiftPos) + 1;
-  const motionDis = -100 * targetLiftPos;
+  const motionDis = 100 * -1 * targetLiftPos;
   const transitionDuration = `${unitsToMove}s`;
-  const timeInMs = unitsToMove * 1500;
+  // timeInMs:duration (in milliseconds) required to traverse one floor.
+  const timeInMs = unitsToMove * 2000;
 
   // Apply styles
   reqLift.style.transitionTimingFunction = "linear";
@@ -130,19 +164,34 @@ function animateLiftsDoors(liftNo, targetLiftPos) {
   const leftGate = document.getElementById(`L${liftNo}left_gate`);
   const rightGate = document.getElementById(`L${liftNo}right_gate`);
 
-  // Start the door animation
-  leftGate.classList.add("door-animation");
-  rightGate.classList.add("door-animation");
+  // Ensure that any previous animations are cleared
+  leftGate.classList.remove("door-animation-close", "door-animation-open");
+  rightGate.classList.remove("door-animation-close", "door-animation-open");
 
+  // Start the door opening animation
+  leftGate.classList.add("door-animation-open");
+  rightGate.classList.add("door-animation-open");
+
+  // Wait 2.5 seconds for the doors to fully open
   setTimeout(() => {
-    // End the door animation
-    leftGate.classList.remove("door-animation");
-    rightGate.classList.remove("door-animation");
+    // Stop the opening animation
+    leftGate.classList.remove("door-animation-open");
+    rightGate.classList.remove("door-animation-open");
 
-    // Update lift motion status and active destinations
-    allLiftInfo[liftNo].inMotion = false;
-    activeLiftsDestinations = activeLiftsDestinations.filter((item) => item !== targetLiftPos);
-  }, 1500);
+    // Start the door closing animation after a delay of 2.5 seconds
+    leftGate.classList.add("door-animation-close");
+    rightGate.classList.add("door-animation-close");
+
+    setTimeout(() => {
+      // End the door closing animation
+      leftGate.classList.remove("door-animation-close");
+      rightGate.classList.remove("door-animation-close");
+
+      // Update lift motion status and active destinations
+      allLiftInfo[liftNo].inMotion = false;
+      activeLiftsDestinations = activeLiftsDestinations.filter((item) => item !== targetLiftPos);
+    }, 2500); // Time for doors to close
+  }, 2500); // Time for doors to stay open
 }
 
 function findNearestFreeLift(flrNo) {
@@ -150,7 +199,8 @@ function findNearestFreeLift(flrNo) {
   let nearestAvailableLift = -1;
 
   for (let i = 0; i < currLiftPositionArr.length; i++) {
-    if (allLiftInfo[i].inMotion === false) {
+    // if (allLiftInfo[i].inMotion === false) {
+    if (!allLiftInfo[i].inMotion) {
       const currDiff = Math.abs(currLiftPositionArr[i] - flrNo);
       if (currDiff < smallestDifference) {
         smallestDifference = currDiff;
@@ -161,40 +211,6 @@ function findNearestFreeLift(flrNo) {
 
   return nearestAvailableLift;
 }
-
-const generateLifts = (n) => {
-  // Clear previous lift info
-  allLiftInfo = [];
-
-  const level0Element = document.getElementById("Level-0");
-
-  for (let i = 0; i < n; i++) {
-    const liftNo = `Lift-${i}`;
-    const liftPositionX = (i + 1) * 90; // Position
-
-    // Create lift element
-    const currLift = document.createElement("div");
-    currLift.id = liftNo;
-    currLift.className = "lifts";
-    currLift.style.left = `${liftPositionX}px`;
-    currLift.style.top = "0px";
-    currLift.innerHTML = `
-      <div class="gate gateLeft" id="L${i}left_gate"></div>
-      <div class="gate gateRight" id="L${i}right_gate"></div>
-    `;
-
-    level0Element.appendChild(currLift);
-
-    // Initialize lift position
-    currLiftPositionArr[i] = 0;
-
-    // Add lift details
-    allLiftInfo.push({
-      id: liftNo,
-      inMotion: false,
-    });
-  }
-};
 
 function fullFillLiftCallsQueue() {
   if (liftCallsQueue.length === 0) return;
