@@ -108,7 +108,8 @@ function generateLifts(n) {
     // Add lift details
     allLiftInfo.push({
       id: liftNo,
-      inMotion: false,
+      inMotion: false, // flag to track motion status
+      doorsOpen: false, // flag to track door status
     });
   }
 }
@@ -131,16 +132,30 @@ function addButtonFunctionalities() {
 }
 
 function translateLift(liftNo, targetLiftPos) {
+  const liftInfo = allLiftInfo[liftNo];
   const reqLift = document.getElementById(`Lift-${liftNo}`);
   const currLiftPos = parseInt(currLiftPositionArr[liftNo], 10);
 
+  // if (currLiftPos === targetLiftPos) {
+  //   allLiftInfo[liftNo].inMotion = false; // Set to false if no movement is needed
+  //   animateLiftsDoors(liftNo, targetLiftPos);
+  //   return;
+  // }
+
+  // allLiftInfo[liftNo].inMotion = true;
+
+  if (liftInfo.doorsOpen) {
+    console.log(`Lift ${liftNo} cannot move because doors are open.`);
+    return; // Exit if doors are open
+  }
+
   if (currLiftPos === targetLiftPos) {
-    allLiftInfo[liftNo].inMotion = false; // Set to false if no movement is needed
+    liftInfo.inMotion = false; // Set to false if no movement is needed
     animateLiftsDoors(liftNo, targetLiftPos);
     return;
   }
 
-  allLiftInfo[liftNo].inMotion = true;
+  liftInfo.inMotion = true;
 
   const unitsToMove = Math.abs(targetLiftPos - currLiftPos) + 1;
   const motionDis = 100 * -1 * targetLiftPos;
@@ -161,6 +176,7 @@ function translateLift(liftNo, targetLiftPos) {
 }
 
 function animateLiftsDoors(liftNo, targetLiftPos) {
+  const liftInfo = allLiftInfo[liftNo];
   const leftGate = document.getElementById(`L${liftNo}left_gate`);
   const rightGate = document.getElementById(`L${liftNo}right_gate`);
 
@@ -171,6 +187,9 @@ function animateLiftsDoors(liftNo, targetLiftPos) {
   // Start the door opening animation
   leftGate.classList.add("door-animation-open");
   rightGate.classList.add("door-animation-open");
+
+  // Set doorsOpen flag to true
+  liftInfo.doorsOpen = true;
 
   // Wait 2.5 seconds for the doors to fully open
   setTimeout(() => {
@@ -188,7 +207,8 @@ function animateLiftsDoors(liftNo, targetLiftPos) {
       rightGate.classList.remove("door-animation-close");
 
       // Update lift motion status and active destinations
-      allLiftInfo[liftNo].inMotion = false;
+      liftInfo.inMotion = false;
+      liftInfo.doorsOpen = false; // Set doorsOpen flag to false
       activeLiftsDestinations = activeLiftsDestinations.filter((item) => item !== targetLiftPos);
     }, 2500); // Time for doors to close
   }, 2500); // Time for doors to stay open
